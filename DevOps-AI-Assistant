@@ -1,0 +1,19 @@
+from openai import OpenAI
+import subprocess
+
+client = OpenAI()
+
+def run_kubectl(command):
+    return subprocess.check_output(command, shell=True).decode()
+
+def agent(user_input):
+    if "pods" in user_input:
+        return run_kubectl("kubectl get pods")
+    
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": user_input}]
+    )
+    return response.choices[0].message.content
+
+print(agent("show me pods"))
